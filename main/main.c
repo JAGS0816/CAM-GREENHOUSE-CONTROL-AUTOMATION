@@ -57,10 +57,11 @@
 
 #define TOLERANCE .05
 
-#define SENS_HUM_1 ADC1_CHANNEL_6
-#define SENS_HUM_2 ADC1_CHANNEL_7
+#define SENS_HUM_1 ADC1_CHANNEL_7
+#define SENS_HUM_2 ADC1_CHANNEL_6
 #define SENS_HUM_3 ADC1_CHANNEL_4
 #define SENS_HUM_4 ADC1_CHANNEL_5
+
 
 #define ATM1 GPIO_NUM_25
 #define ATM2 GPIO_NUM_26
@@ -70,14 +71,14 @@
 
 #define TX0_GPIO GPIO_NUM_1
 
-#define FLOW1_GPIO GPIO_NUM_21
-#define FLOW2_GPIO GPIO_NUM_19
+#define FLOW1_GPIO GPIO_NUM_19
+#define FLOW2_GPIO GPIO_NUM_21
 
 #define ELECTRO_VALVE1 GPIO_NUM_18
 #define ELECTRO_VALVE2 GPIO_NUM_5
 
-#define LINE1_BUTTON GPIO_NUM_4
-#define LINE2_BUTTON GPIO_NUM_2
+#define LINE1_BUTTON GPIO_NUM_2
+#define LINE2_BUTTON GPIO_NUM_4
 
 #define MAX_TIME 60
 //Commands
@@ -132,6 +133,11 @@ struct new_control{
 
 struct new_timer{
 	int time;
+};
+
+struct mqtt{
+	char hum1_topic [10];
+	char hum2_topic [10];
 };
 
 struct new_line{
@@ -338,7 +344,7 @@ void change_line_mode(struct new_line* line){
 	int atm2_state = gpio_get_level(ATM2);
 	int mode = line->mode;
 	// Timer
-	if (!atm1_state && !atm2_state) {
+	if (!atm1_state && atm2_state) {
 		mode = AUTO;
 	}
 	// Auto
@@ -346,9 +352,10 @@ void change_line_mode(struct new_line* line){
 		mode = MANUAL;
 	}
 	// Manual
-	else if (!atm1_state && atm2_state) {
+	else if (atm1_state && atm2_state) {
 		mode = TIMER;
 	}
+
 
 	line->mode = mode;
 }
@@ -523,7 +530,7 @@ void control_humidity_task(void* arg){
 				break;
 		}
 		printf("Humidity controled\n");
-
+		printf("Actual mode: %d", line1.mode);
 		vTaskDelay(delay_control / portTICK_PERIOD_MS);
 	}
 }

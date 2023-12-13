@@ -20,7 +20,7 @@ This project implements a humidity and flow control system using an ESP32 microc
 
 ### Configuration
 1. Ensure you have the ESP-IDF development environment installed.
-2. Configure the WiFi network in the `sdkconfig` file with your network credentials.
+2. Configure the WiFi network in the `sdkconfig` file with your network credentials(It has mocked credentials right now)
 3. Configure MQTT server details in the `main/main.c` file under the "MQTT Constants" section.
 
 ### Usage
